@@ -42,7 +42,7 @@ public class JwtService {
                 .getPayload().getSubject();
 
     }
-    
+
     public boolean isTokenValid(String token,  UserDetails userDetails) {
         String userEmail = extractEmail(token);
         Date now = new Date();
