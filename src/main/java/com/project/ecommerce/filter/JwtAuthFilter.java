@@ -27,31 +27,56 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+
         String token = header.substring(7);
-        String email  = jwtService.extractEmail(token);
-        if (email == null) {
+        String email;
+
+
+
+
+        try{
+            email = jwtService.extractEmail(token);
+        } catch (Exception e){
+            filterChain.doFilter(request, response);
             return;
         }
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-        if(jwtService.isTokenValid(token, userDetails)) {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
 
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+        if (email == null) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
+        try {
+
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+            if (jwtService.isTokenValid(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+
+            }
+        } catch (Exception e) {
+
+            System.out.println("=== Exception: " + e.getClass().getName());
+            System.out.println("=== Message: " + e.getMessage());
+
+        }
 
         filterChain.doFilter(request, response);
 

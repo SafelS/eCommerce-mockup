@@ -49,11 +49,12 @@ public class JwtService {
         boolean isNotExpired = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
                 .getPayload()
                 .getExpiration()
                 .after(now);
         boolean emailIsValid = userEmail.equals(userDetails.getUsername());
+
         return isNotExpired && emailIsValid;
     }
 
