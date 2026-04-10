@@ -21,6 +21,12 @@ public class AuthController {
         return authService.register(registerRequestDto);
     }
 
+    @PostMapping("/register-admin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthResponseDto registerAdmin(@RequestBody RegisterRequestDto registerRequestDto) {
+        return authService.registerAdmin(registerRequestDto);
+    }
+
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public AuthResponseDto loginUser(@RequestBody LoginRequestDto loginRequestDto) {

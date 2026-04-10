@@ -38,6 +38,19 @@ public class AuthService {
 
     }
 
+    public AuthResponseDto registerAdmin(RegisterRequestDto registerRequestDto) {
+        User admin = new User();
+        admin.setDisplayName(registerRequestDto.getUsername());
+        admin.setEmail(registerRequestDto.getEmail());
+        admin.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
+        admin.setRole(Role.ADMIN);
+        userRepository.save(admin);
+
+        String token = jwtService.generateToken(admin);
+
+        return new AuthResponseDto(token, "Admin created");
+    }
+
     public AuthResponseDto login(LoginRequestDto loginRequestDto) {
 
 
