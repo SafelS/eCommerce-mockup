@@ -27,10 +27,11 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository  userRepository;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
 
+
+    //ADMIN ONLY
     public List<OrderResponseDto> getAllOrders() {
 
         List<Order> orders = orderRepository.findAll();
@@ -44,6 +45,34 @@ public class OrderService {
 
     }
 
+
+    public List<OrderResponseDto> getMyOrders(){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Order> myOrders = orderRepository.findByUserId(user.getId());
+        List<OrderResponseDto> orderResponseDtos = myOrders.stream()
+                .map(o -> new OrderResponseDto(o.getId(),o.getStatus(),o.getCreatedAt(),o.getOrderItems().stream()
+                        .map(oi -> new OrderItemResponseDto(oi.getProduct().getName(), oi.getQuantity(), oi.getPriceAtPurchase()))
+                        .toList()))
+                .toList();
+
+        return orderResponseDtos;
+    }
+
+
+    public OrderResponseDto updateOrderStatus(OrderStatus status, Long id){
+
+        Order order = orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        order.setStatus(status);
+
+        Order updatedOrder = orderRepository.save(order);
+
+        return new OrderResponseDto(updatedOrder.getId(),updatedOrder.getStatus(),updatedOrder.getCreatedAt(),updatedOrder.getOrderItems().stream()
+                .map(oi -> new OrderItemResponseDto(oi.getProduct().getName(),oi.getQuantity(),oi.getPriceAtPurchase())).toList());
+
+    }
+
+
     public OrderResponseDto getOrderById(Long id) {
 
         Order order = orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -53,7 +82,7 @@ public class OrderService {
 
     }
 
-    //TODO
+
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
