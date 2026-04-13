@@ -1,13 +1,17 @@
 package com.project.ecommerce.service;
 
+import com.project.ecommerce.dto.OrderItemRequestDto;
 import com.project.ecommerce.dto.OrderItemResponseDto;
 import com.project.ecommerce.dto.OrderRequestDto;
 import com.project.ecommerce.dto.OrderResponseDto;
 import com.project.ecommerce.entity.Order;
 import com.project.ecommerce.entity.OrderItem;
+import com.project.ecommerce.entity.Product;
 import com.project.ecommerce.entity.User;
 import com.project.ecommerce.enums.OrderStatus;
+import com.project.ecommerce.repository.OrderItemRepository;
 import com.project.ecommerce.repository.OrderRepository;
+import com.project.ecommerce.repository.ProductRepository;
 import com.project.ecommerce.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +28,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository  userRepository;
+    private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
 
     public List<OrderResponseDto> getAllOrders() {
 
@@ -48,14 +55,39 @@ public class OrderService {
 
     //TODO
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) {
+
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+
+
         Order order = new Order();
-        order.setStatus(OrderStatus.PAYED);
+        order.setStatus(OrderStatus.PENDING);
         order.setCreatedAt(LocalDateTime.now());
         order.setUser(user);
-        order.setOrderItems(orderRequestDto.getOrderItems().stream()
-                .map(oi -> new OrderItem()));
+
+        Order savedOrder = orderRepository.save(order);
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for (OrderItemRequestDto itemDto : orderRequestDto.getOrderItems()){
+            Product product = productRepository.findById(itemDto.getProductId()).orElseThrow(EntityNotFoundException::new);
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(savedOrder);
+            orderItem.setProduct(product);
+            orderItem.setPriceAtPurchase(product.getPrice());
+            orderItem.setQuantity(itemDto.getQuantity());
+            product.setStock(product.getStock() - itemDto.getQuantity());
+            productRepository.save(product);
+
+            orderItems.add(orderItem);
+
+        }
+
+        orderItemRepository.saveAll(orderItems);
+
+        return new OrderResponseDto(savedOrder.getId(), savedOrder.getStatus(), savedOrder.getCreatedAt(), orderItems.stream()
+                .map(item -> new OrderItemResponseDto(item.getProduct().getName(), item.getQuantity(), item.getPriceAtPurchase())).toList());
 
     }
 

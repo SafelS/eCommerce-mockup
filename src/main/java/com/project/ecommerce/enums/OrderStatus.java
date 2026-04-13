@@ -1,5 +1,5 @@
 package com.project.ecommerce.enums;
 
 public enum OrderStatus {
-    PAYED, SHIPPED, DELIVERED
+    PENDING, SHIPPED, DELIVERED
 }
