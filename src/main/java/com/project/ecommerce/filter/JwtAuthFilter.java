@@ -23,8 +23,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        System.out.println("=== Filter läuft: " + request.getRequestURI() + " - " + request.getMethod());
+        System.out.println("=== Header: " + request.getHeader("Authorization"));
 
         String header = request.getHeader("Authorization");
 
