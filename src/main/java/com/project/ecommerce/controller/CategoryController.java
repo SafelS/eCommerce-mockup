@@ -3,6 +3,7 @@ package com.project.ecommerce.controller;
 import com.project.ecommerce.dto.CategoryRequestDto;
 import com.project.ecommerce.dto.CategoryResponseDto;
 import com.project.ecommerce.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +28,13 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+    public CategoryResponseDto createCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         return categoryService.createCategory(categoryRequestDto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CategoryResponseDto updateCategory(@PathVariable("id") Long id, @RequestBody CategoryRequestDto categoryRequestDto) {
+    public CategoryResponseDto updateCategory(@PathVariable("id") Long id, @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         return categoryService.updateCategory(id,  categoryRequestDto);
     }
 

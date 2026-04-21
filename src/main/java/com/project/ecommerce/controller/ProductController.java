@@ -4,6 +4,7 @@ import com.project.ecommerce.dto.CategoryResponseDto;
 import com.project.ecommerce.dto.ProductRequestDto;
 import com.project.ecommerce.dto.ProductResponseDto;
 import com.project.ecommerce.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +30,13 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponseDto createProduct(@RequestBody ProductRequestDto productRequestDto) {
+    public ProductResponseDto createProduct(@Valid @RequestBody ProductRequestDto productRequestDto) {
         return productService.createProduct(productRequestDto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponseDto updateProduct(@PathVariable Long id, @RequestBody ProductRequestDto productRequestDto) {
+    public ProductResponseDto updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDto productRequestDto) {
         return productService.updateProduct(id, productRequestDto);
     }
 

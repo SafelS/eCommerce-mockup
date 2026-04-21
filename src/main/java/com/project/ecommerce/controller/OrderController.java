@@ -4,6 +4,7 @@ import com.project.ecommerce.dto.OrderRequestDto;
 import com.project.ecommerce.dto.OrderResponseDto;
 import com.project.ecommerce.enums.OrderStatus;
 import com.project.ecommerce.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponseDto createOrder(@RequestBody OrderRequestDto requestDto){
+    public OrderResponseDto createOrder(@Valid @RequestBody OrderRequestDto requestDto){
         return orderService.createOrder(requestDto);
     }
 
