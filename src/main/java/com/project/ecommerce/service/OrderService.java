@@ -9,6 +9,7 @@ import com.project.ecommerce.entity.OrderItem;
 import com.project.ecommerce.entity.Product;
 import com.project.ecommerce.entity.User;
 import com.project.ecommerce.enums.OrderStatus;
+import com.project.ecommerce.exception.InsufficientStockException;
 import com.project.ecommerce.repository.OrderItemRepository;
 import com.project.ecommerce.repository.OrderRepository;
 import com.project.ecommerce.repository.ProductRepository;
@@ -101,6 +102,14 @@ public class OrderService {
 
         for (OrderItemRequestDto itemDto : orderRequestDto.getOrderItems()){
             Product product = productRepository.findById(itemDto.getProductId()).orElseThrow(EntityNotFoundException::new);
+
+            if (product.getStock() < itemDto.getQuantity()){
+                throw new InsufficientStockException(
+                        product.getName(),
+                        product.getStock(),
+                        itemDto.getQuantity()
+                );
+            }
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(savedOrder);

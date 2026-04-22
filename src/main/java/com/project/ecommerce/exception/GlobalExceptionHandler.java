@@ -37,4 +37,10 @@ public class GlobalExceptionHandler {
     public ErrorResponseDto handleRuntimeException(RuntimeException ex) {
         return new ErrorResponseDto(500, "Internal server error", ex.getMessage());
     }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleInsufficientStockException(InsufficientStockException ex){
+        return new ErrorResponseDto(400, "Insufficient stock", ex.getMessage());
+    }
 }
