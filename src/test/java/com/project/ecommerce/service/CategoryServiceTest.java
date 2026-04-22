@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,11 +41,11 @@ public class CategoryServiceTest {
         when(categoryRepository.findAll()).thenReturn(List.of(category));
 
         //ACT
-        List<CategoryResponseDto> result = categoryService.getAllCategories();
+        Page<CategoryResponseDto> result = categoryService.getAllCategories(0, 10);
 
         //ASSERT
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Electronics");
+        assertThat(result.toList().get(0).getName()).isEqualTo("Electronics");
 
     }
 

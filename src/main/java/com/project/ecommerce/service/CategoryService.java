@@ -6,6 +6,9 @@ import com.project.ecommerce.entity.Category;
 import com.project.ecommerce.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,14 +19,12 @@ import java.util.List;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public List<CategoryResponseDto> getAllCategories() {
+    public Page<CategoryResponseDto> getAllCategories(int page, int size) {
 
-        List<Category> categories = categoryRepository.findAll();
-        List<CategoryResponseDto> categoryResponseDtos = categories.stream()
-                .map(c -> new CategoryResponseDto(c.getId(),c.getName()))
-                .toList();
+        Pageable pageable = PageRequest.of(page, size);
 
-        return categoryResponseDtos;
+        return categoryRepository.findAll(pageable)
+                .map(c -> new CategoryResponseDto(c.getId(),c.getName()));
 
     }
 

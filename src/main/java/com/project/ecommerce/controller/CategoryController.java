@@ -5,6 +5,7 @@ import com.project.ecommerce.dto.CategoryResponseDto;
 import com.project.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryResponseDto> getCategories() {
-        return categoryService.getAllCategories();
+    public Page<CategoryResponseDto> getCategories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return categoryService.getAllCategories(page, size);
     }
 
     @GetMapping("/{id}")

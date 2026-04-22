@@ -15,6 +15,9 @@ import com.project.ecommerce.repository.ProductRepository;
 import com.project.ecommerce.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -32,16 +35,14 @@ public class OrderService {
 
 
     //ADMIN ONLY
-    public List<OrderResponseDto> getAllOrders() {
+    public Page<OrderResponseDto> getAllOrders(int page, int size) {
 
-        List<Order> orders = orderRepository.findAll();
-        List<OrderResponseDto> orderResponseDtos = orders.stream()
+        Pageable pageable = PageRequest.of(page, size);
+
+        return orderRepository.findAll(pageable)
                 .map(o -> new OrderResponseDto(o.getId(),o.getStatus(),o.getCreatedAt(),o.getOrderItems()
-                        .stream().map(oi -> new OrderItemResponseDto(oi.getProduct().getName(), oi.getQuantity(), oi.getPriceAtPurchase()))
-                        .toList()))
-                .toList();
-
-        return orderResponseDtos;
+                                .stream().map(oi -> new OrderItemResponseDto(oi.getProduct().getName(), oi.getQuantity(), oi.getPriceAtPurchase()))
+                                .toList()));
 
     }
 

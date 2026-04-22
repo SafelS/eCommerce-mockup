@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,11 +45,11 @@ public class ProductServiceTest {
 
         when(productRepository.findAll()).thenReturn(List.of(product));
 
-        List<ProductResponseDto> result = productService.getAllProducts();
+        Page<ProductResponseDto> result = productService.getAllProducts(0,10);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(product.getId());
-        assertThat(result.get(0).getName()).isEqualTo(product.getName());
+        assertThat(result.toList().get(0).getId()).isEqualTo(product.getId());
+        assertThat(result.toList().get(0).getName()).isEqualTo(product.getName());
 
 
     }
