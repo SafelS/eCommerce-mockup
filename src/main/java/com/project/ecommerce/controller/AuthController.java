@@ -1,8 +1,6 @@
 package com.project.ecommerce.controller;
 
-import com.project.ecommerce.dto.AuthResponseDto;
-import com.project.ecommerce.dto.LoginRequestDto;
-import com.project.ecommerce.dto.RegisterRequestDto;
+import com.project.ecommerce.dto.*;
 import com.project.ecommerce.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +30,18 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public AuthResponseDto loginUser(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return authService.login(loginRequestDto);
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.OK)
+    public void forgotPassword(@Valid @RequestBody ForgotPasswordRequestDto requestDto){
+        authService.forgotPassword(requestDto);
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.OK)
+    public String resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto){
+        return authService.resetPassword(requestDto);
     }
 
 
